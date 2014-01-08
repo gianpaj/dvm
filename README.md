@@ -8,8 +8,8 @@ Are you already a Vagrant user using Virtualbox? Use Homebrew? Great!
 
 
 ```sh
-# Install Docker Mac binary (see note below)
-brew install https://raw.github.com/steeve/homebrew-binary/docker/docker.rb
+# Install Docker Mac binary
+brew install docker
 
 # Install dvm
 brew install https://raw.github.com/fnichol/dvm/master/homebrew/dvm.rb
@@ -23,8 +23,6 @@ eval $(dvm env)
 # Run plain 'ol Docker commands right from your Mac
 docker run ubuntu cat /etc/lsb-release
 ```
-
-**Note**: The Homebrew/Docker install URL is temporary, pending the merging of https://github.com/Homebrew/homebrew-binary/pull/48 into [homebrew-binary](https://github.com/Homebrew/homebrew-binary).
 
 p.s. No Vagrant or VirtualBox installed? Check out the [Requirements](#requirements) section below.
 
@@ -93,134 +91,4 @@ Bring up your VM with `dvm up`:
 
 ```
 $ dvm up
-Bringing machine 'dvm' up with 'virtualbox' provider...
-...<snip>...
-[dvm] Configuring and enabling network interfaces...
-[dvm] Running provisioner: shell...
-[dvm] Running: inline script
----> Configuring docker to bind to tcp/4243 and restarting
-```
-
-Need to free up some memory? Pause your VM with `dvm suspend`:
-
-```
-$ dvm suspend
-[dvm] Saving VM state and suspending execution...
-```
-
-When you come back to your Dockerawesome project resume your VM with `dvm resume`:
-
-```
-$ dvm resume
-[dvm] Resuming suspended VM...
-[dvm] Booting VM...
-[dvm] Waiting for machine to boot. This may take a few minutes...
-[dvm] Machine booted and ready!
-```
-
-Your local `docker` binary needs to be told that it is targetting a remote system and to not try the local Unix socket, which is the default behavior. Version 0.7.3 of Docker introduced the `DOCKER_HOST` environment variable that will set the target Docker host. By default, dvm will run your VM on a private network at **192.168.42.43** with Docker listening on port **4243**. The `dvm env` subcommand will print a suitable `DOCKER_HOST` line that can be used in your environment. If you want this loaded into your session, evaluate the resulting config with:
-
-```
-$ echo $DOCKER_HOST
-
-$ eval `dvm env`
-
-$ echo $DOCKER_HOST
-tcp://192.168.42.43:4243
-```
-
-Check your VM status with `dvm status`:
-
-```
-$ dvm status
-Current machine states:
-
-dvm                       running (virtualbox)
-
-The VM is running. To stop this VM, you can run `vagrant halt` to
-shut it down forcefully, or you can run `vagrant suspend` to simply
-suspend the virtual machine. In either case, to restart it again,
-simply run `vagrant up`.
-```
-
-Log into your VM (via SSH) with `dvm ssh`:
-
-```
-$ dvm ssh
-                        ##        .
-                  ## ## ##       ==
-               ## ## ## ##      ===
-           /""""""""""""""""\___/ ===
-      ~~~ {~~ ~~~~ ~~~ ~~~~ ~~ ~ /  ===- ~~~
-           \______ o          __/
-             \    \        __/
-              \____\______/
- _                 _   ____     _            _
-| |__   ___   ___ | |_|___ \ __| | ___   ___| | _____ _ __
-| '_ \ / _ \ / _ \| __| __) / _` |/ _ \ / __| |/ / _ \ '__|
-| |_) | (_) | (_) | |_ / __/ (_| | (_) | (__|   <  __/ |
-|_.__/ \___/ \___/ \__|_____\__,_|\___/ \___|_|\_\___|_|
-docker@boot2docker:~$ uname -a
-Linux boot2docker 3.12.1-tinycore64 #1 SMP Sun Dec 8 19:38:19 UTC 2013 x86_64 GNU/Linux
-docker@boot2docker:~$
-```
-
-## <a name="usage-embedded"></a> Embed in a Project
-
-As the core of dvm is a Vagranfile (surprise!) you can simply download the dvm Vagrantfile into your project using the http://git.io/dvm-vagrantfile shortlink:
-
-```sh
-wget -O Vagrantfile http://git.io/dvm-vagrantfile
-```
-
-## <a name="configuration"></a> Configuration
-
-If you wish to change the Docker TCP port or memory settings of the virtual machine, edit `$HOME/.dvm/dvm.conf` for the configuration to be used. By default the following configuration is used:
-
-* `DOCKER_IP`: `192.168.42.43`
-* `DOCKER_PORT`: `4243`
-* `DOCKER_MEMORY`: `512` (in MB)
-* `DOCKER_ARGS`: `-H unix:///var/run/docker.sock -H tcp://0.0.0.0:$DOCKER_PORT`
-
-## <a name="development"></a> Development
-
-* Source hosted at [GitHub][repo]
-* Report issues/questions/feature requests on [GitHub Issues][issues]
-
-Pull requests are very welcome! Make sure your patches are well tested.
-Ideally create a topic branch for every separate change you make. For
-example:
-
-1. Fork the repo
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
-
-## <a name="authors"></a> Authors
-
-Created and maintained by [Fletcher Nichol][fnichol] (<fnichol@nichol.ca>)
-
-## <a name="credits"></a> Credits
-
-* [Steeve Morin (steeve)](https://github.com/steeve) for [boot2docker][boot2docker]
-* [Mitchell Hashimoto (mitchellh)](https://github.com/mitchellh) for [Vagrant][vagrant] and [boot2docker Vagrant Box][boot2docker_vagrant_box]
-* [Postmodern (postmodern)](https://github.com/postmodern) for awesome examples of killer project skeletons in [chruby](https://github.com/postmodern/chruby) and [ruby-install](https://github.com/postmodern/ruby-install)
-
-## <a name="license"></a> License
-
-Apache 2.0 (see [LICENSE.txt][license])
-
-[license]:      https://github.com/fnichol/dvm/blob/master/LICENSE.txt
-[fnichol]:      https://github.com/fnichol
-[repo]:         https://github.com/fnichol/dvm
-[issues]:       https://github.com/fnichol/dvm/issues
-
-[docker]:         http://www.docker.io/
-[docker_api]:     http://docs.docker.io/en/latest/api/docker_remote_api/
-[docker_dl]:      http://docs.docker.io/en/latest/installation/
-[vagrant]:        http://www.vagrantup.com/
-[vagrant_dl]:     http://www.vagrantup.com/downloads.html
-[virtualbox_dl]:  https://www.virtualbox.org/wiki/Downloads
-[boot2docker]:    https://github.com/steeve/boot2docker
-[boot2docker_vagrant_box]: https://github.com/mitchellh/boot2docker-vagrant-box
+Bringing machine 
